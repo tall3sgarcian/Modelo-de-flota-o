@@ -1,0 +1,51 @@
+import numpy as np
+from scipy.integrate import odeint
+import matplotlib.pyplot as plt
+
+# Definição das equações diferenciais
+def equations(y, t, V, Av, Hw, Ha, a, b, Qa, Cx, CF, QF, QT, Qwd, Qwu):
+    Ca, Cw = y
+    dCadt = ((a * Av * (1 - Ca / Cx) * Hw * Cw / Ha) - (b * Ca) - (Qa * Ca)/ Ha * V)
+    dCwdt = (-a * Av * (1 - Ca / Cx) * Cw) + ((b * Ha * Ca) / Hw) + ((QF * CF)/ Hw * V) 
+    + ((Qwd * Cw)/ Hw * V) + ((Qwu * Cw)/ Hw * V)
+    return [dCadt, dCwdt]
+
+# Parâmetros do sistema
+V = 1
+Av = 1.0
+Hw = 1.0
+Ha = 5.0
+a = 1.2
+b = 0.1
+Qa = 0.3
+Cx = 5.0
+QF = 0.2
+QT = 0.8
+Qwd = 0.1
+Qwu = 0.1
+CF = 0.5
+
+# Condições iniciais
+y0 = [0.0, 0.8]
+
+# Intervalo de tempo
+t = np.linspace(0, 10, 100)
+
+# Resolvendo as equações diferenciais
+solution = odeint(equations, y0, t, args=(V, Av, Hw, Ha, a, b, Qa, Cx, CF, QF, QT, Qwd, Qwu))
+
+# Extração das soluções para Ca e Cw
+Ca = solution[:, 0]
+Cw = solution[:, 1]
+
+
+# Plotando o gráfico das concentrações Ca e Cw
+plt.figure(figsize=(10, 6))
+plt.plot(t, Ca, label='Ca')
+plt.plot(t, Cw, label='Cw')
+plt.xlabel('Tempo (min)')
+plt.ylabel('Concentração')
+plt.legend()
+plt.title('Concentrações Ca e Cw ao longo do tempo')
+#plt.grid(True)
+plt.show()
